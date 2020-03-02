@@ -4,8 +4,6 @@
   hosts: localhost
   vars_files: 
    - ./ansible-grafana-env-vars.yml
-  vars: 
-    use_online_dashboards_repo: true
   tasks: 
 #  - debug: 
 #      var: grafana_folders
