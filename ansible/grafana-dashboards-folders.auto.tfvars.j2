@@ -1,0 +1,19 @@
+
+###################
+# Grafana Variables
+###################
+
+grf_folders [
+{% for f in folders %}
+  "{{ f }}",
+{% endfor %}
+]
+
+grf_dashboards [
+{% for f in dashboards %}
+{% for info in dashboards[f] %}
+{ {{ f }} = "./dashboards/{{ info.dashboard_file }}" },
+{% endfor %}
+{% endfor %}
+]
+

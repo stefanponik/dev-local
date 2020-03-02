@@ -1,0 +1,67 @@
+---
+
+- name: Ansible Terraform Wrapper
+  hosts: localhost
+  vars_files: 
+   - ./ansible-grafana-env-vars.yml
+  vars: 
+    use_online_dashboards_repo: true
+  tasks: 
+#  - debug: 
+#      var: grafana_folders
+#
+#  - debug: 
+#      var: grafana_dashboards.Docker_Infra
+
+  - name: Get Terraform Module RestAPI MAC
+    get_url: 
+      url: https://github.com/Mastercard/terraform-provider-restapi/releases/download/v1.11.0/terraform-provider-restapi_v1.11.0-darwin-amd64
+      dest: ~/.terraform.d/plugins/terraform-provider-restapi_v1.11.0
+    when: ansible_distribution == "MacOSX"
+
+  - name: Get Terraform Module RestAPI UBUNTU
+    get_url: 
+      url: https://github.com/Mastercard/terraform-provider-restapi/releases/download/v1.11.0/terraform-provider-restapi_v1.11.0-linux-amd64
+      dest: ~/.terraform.d/plugins/terraform-provider-restapi_v1.11.0
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Clone dashboards Git repositry 
+    git: 
+      repo: 'https://github.com/stefanponik/grafana-dashboards.git'
+      dest: ./grafana-dashboards
+      version: v0.0.1
+
+  - set_fact: 
+      full_dashboard_list: "{{ full_dashboard_list|default([]) + item.value }}"
+    loop: "{{ grafana_dashboards|dict2items }}"
+  
+  - set_fact: 
+      uniq_dashboard_list: "{{ full_dashboard_list | unique }}"
+  
+#  - debug: 
+#      var: uniq_dashboard_list
+#
+#  - debug: 
+#      msg: "{{ item.dashboard_file }}"
+#    loop: "{{ uniq_dashboard_list }}"
+
+  - name: Make sure dashboards folder exists
+    file:
+      path: ../terraform/dashboards
+      state: directory 
+    delegate_to: localhost
+
+  - name: Copy template dashboards 
+    copy: 
+      src: "grafana-dashboards/{{ item.dashboard_file }}"
+      dest: "../terraform/dashboards/{{ item.dashboard_file }}"
+    loop: "{{ uniq_dashboard_list }}"
+    delegate_to: localhost
+
+  - name: Take Grafana templates and Update Template Json Datastore structure
+    replace:
+      dest: "../terraform/dashboards//{{ item.dashboard_file }}"
+      regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
+      replace: '"{{ item.grafana_datastore }}"'
+    loop: "{{ uniq_dashboard_list }}"
+    delegate_to: localhost
