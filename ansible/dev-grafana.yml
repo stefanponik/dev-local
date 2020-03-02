@@ -63,3 +63,13 @@
       replace: '"{{ item.grafana_datastore }}"'
     loop: "{{ uniq_dashboard_list }}"
     delegate_to: localhost
+
+  - name: Generate Terraform Grafana VARs 
+    template: 
+      src: grafana-dashboards-folders.auto.tfvars.j2
+     # dest: ../../terraform/environments/dev-local/grafana/grafana_fd.auto.tfvars
+      dest: ../terraform/grafana-dashboards-folders.auto.tfvars
+    vars: 
+      folders: "{{ grafana_folders }}"
+      dashboards: "{{ grafana_dashboards }}"
+    delegate_to: localhost
