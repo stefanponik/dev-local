@@ -4,16 +4,16 @@
 # Ansible Generated
 ###################
 
-grf_folders [
+grf_folders = [
 {% for f in folders %}
   "{{ f }}",
 {% endfor %}
 ]
 
-grf_dashboards [
+grf_dashboards = [
 {% for f in dashboards %}
 {% for info in dashboards[f] %}
-{ {{ f }} = "./dashboards/{{ info.dashboard_file }}" },
+  { {{ f }} = "./dashboards/{{ info.dashboard_file }}" },
 {% endfor %}
 {% endfor %}
 ]
