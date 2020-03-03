@@ -49,8 +49,15 @@ module "terraform-restapi-grafana-datasources-cfg" {
 # }
 
 module "terraform-grafana-cfg" {
-  source         = "../../terraform-grafana-cfg"
+  source         = "github.com/stefanponik/terraform-grafana-cfg.git?ref=v0.0.1"
   grf_folders    = var.grf_folders
   grf_dashboards = var.grf_dashboards
-
 }
+
+# For Development purpose only
+# module "terraform-grafana-cfg" {
+#   source         = "../../terraform-grafana-cfg"
+#   grf_folders    = var.grf_folders
+#   grf_dashboards = var.grf_dashboards
+# 
+# }
