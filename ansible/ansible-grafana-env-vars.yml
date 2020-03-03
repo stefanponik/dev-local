@@ -8,8 +8,10 @@ grafana_folders:
 
 grafana_dashboards: 
   Docker_Infra:
-    - dashboard_file: "Docker-overview-type-1.json"
+    - dashboard_file: "Docker-Metrics-per-container-type1.json"
       grafana_datastore: "influxdb-metricstore"
   Monitoring_Infra:
     - dashboard_file: "InfluxDB-Docker-type-1.json"
+      grafana_datastore: "influxdb-metricstore"
+    - dashboard_file: "Docker-overview-type-1.json"
       grafana_datastore: "influxdb-metricstore"

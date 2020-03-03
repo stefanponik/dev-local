@@ -27,7 +27,7 @@
     git: 
       repo: 'https://github.com/stefanponik/grafana-dashboards.git'
       dest: ./grafana-dashboards
-      version: v0.0.1
+      version: v0.0.2
 
   - set_fact: 
       full_dashboard_list: "{{ full_dashboard_list|default([]) + item.value }}"
