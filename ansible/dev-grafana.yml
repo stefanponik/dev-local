@@ -11,16 +11,24 @@
 #  - debug: 
 #      var: grafana_dashboards.Docker_Infra
 
+  - name: Make sure Terraform Plugin folder exists in expected path. 
+    file: 
+      path: ~/.terraform.d/plugins
+      state: directory
+    delegate_to: localhost
+
   - name: Get Terraform Module RestAPI MAC
     get_url: 
       url: https://github.com/Mastercard/terraform-provider-restapi/releases/download/v1.11.0/terraform-provider-restapi_v1.11.0-darwin-amd64
       dest: ~/.terraform.d/plugins/terraform-provider-restapi_v1.11.0
+      mode: '0744'
     when: ansible_distribution == "MacOSX"
 
   - name: Get Terraform Module RestAPI UBUNTU
     get_url: 
       url: https://github.com/Mastercard/terraform-provider-restapi/releases/download/v1.11.0/terraform-provider-restapi_v1.11.0-linux-amd64
       dest: ~/.terraform.d/plugins/terraform-provider-restapi_v1.11.0
+      mode: '0744'
     when: ansible_distribution == "Ubuntu"
 
   - name: Clone dashboards Git repositry 
@@ -31,7 +39,7 @@
 
   - set_fact: 
       full_dashboard_list: "{{ full_dashboard_list|default([]) + item.value }}"
-    loop: "{{ grafana_dashboards|dict2items }}"
+    loop: "{{ grafana_dashboards|dict2items }}" 
   
   - set_fact: 
       uniq_dashboard_list: "{{ full_dashboard_list | unique }}"
@@ -47,14 +55,12 @@
     file:
       path: ../terraform/dashboards
       state: directory 
-    delegate_to: localhost
 
   - name: Copy template dashboards 
     copy: 
       src: "grafana-dashboards/{{ item.dashboard_file }}"
       dest: "../terraform/dashboards/{{ item.dashboard_file }}"
     loop: "{{ uniq_dashboard_list }}"
-    delegate_to: localhost
 
   - name: Take Grafana templates and Update Template Json Datastore structure
     replace:
@@ -62,7 +68,6 @@
       regexp: '"(?:\${)?DS_[A-Z0-9_-]+(?:})?"'
       replace: '"{{ item.grafana_datastore }}"'
     loop: "{{ uniq_dashboard_list }}"
-    delegate_to: localhost
 
   - name: Generate Terraform Grafana VARs 
     template: 
@@ -72,4 +77,4 @@
     vars: 
       folders: "{{ grafana_folders }}"
       dashboards: "{{ grafana_dashboards }}"
-    delegate_to: localhost
+
