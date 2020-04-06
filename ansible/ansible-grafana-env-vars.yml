@@ -2,16 +2,13 @@
 # This is grafana definition File that is used for ansible and terraform to generate all required to deploy this. 
 
 grafana_folders: 
-  - Docker_Infra
-  - Monitoring_Infra
-  - VMware_Infra
+  - Docker_Info
 
 grafana_dashboards: 
-  Docker_Infra:
-    - dashboard_file: "Docker-Metrics-per-container-type1.json"
-      grafana_datastore: "influxdb-metricstore"
-  Monitoring_Infra:
+  Docker_Info:
     - dashboard_file: "InfluxDB-Docker-type-1.json"
       grafana_datastore: "influxdb-metricstore"
     - dashboard_file: "Docker-overview-type-1.json"
+      grafana_datastore: "influxdb-metricstore"
+    - dashboard_file: "Docker-Metrics-per-container-type1.json"
       grafana_datastore: "influxdb-metricstore"
